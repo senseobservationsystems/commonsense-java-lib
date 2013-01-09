@@ -224,7 +224,6 @@ public class Api {
 			String content = response.get("content");					// String format of sensors
 			JsonObject json = (JsonObject) parser.parse(content); 		// JSON container of sensors
 
-			System.out.println(content);
 			int numSensors = json.get("data").getAsJsonArray().size();
 
 			for (int i = 0; i < numSensors; i++) {
