@@ -30,7 +30,7 @@ public class Params {
 		/**
 		 * This parameter specifies the amount of items that must be received at once. The maximum amount is 1000 items and the default amount is 100 items.
 		 */
-		public static int per_page = 100;
+		public static int per_page = 1000;
 
 		/**
 		 * With this parameter set to 1, only sensors which the user shares with others are displayed. The sensor object will contain an array named users with the ids of users that have access to the

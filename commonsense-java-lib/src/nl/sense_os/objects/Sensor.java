@@ -106,6 +106,49 @@ public class Sensor {
 	public boolean isUse_data_storage() {
 		return use_data_storage;
 	}
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
+	public void setDevice_type(String device_type) {
+		this.device_type = device_type;
+	}
+
+	public void setData_type_id(int data_type_id) {
+		this.data_type_id = data_type_id;
+	}
+
+	public void setPager_type(String pager_type) {
+		this.pager_type = pager_type;
+	}
+
+	public void setDisplay_name(String display_name) {
+		this.display_name = display_name;
+	}
+
+	public void setData_type(String data_type) {
+		this.data_type = data_type;
+	}
+
+	public void setData_structure(String data_structure) {
+		this.data_structure = data_structure;
+	}
+
+	public void setDevice(Device device) {
+		this.device = device;
+	}
+
+	public void setUse_data_storage(boolean use_data_storage) {
+		this.use_data_storage = use_data_storage;
+	}
 
 	/**
 	 * This method returns a JsonObject with the description of this Sensor. Please note that only the values which are not null are added to the JsonObject.
@@ -152,5 +195,75 @@ public class Sensor {
 
 		json.add("sensor", sensorProperties);
 		return json;
+	}
+	
+	/**
+	 * This method will compare current object to the parameter
+	 * @param other
+	 * @param ignoreNull if true, it will skip property of current object that is null value
+	 * @return
+	 */
+	public boolean equals(Sensor other, boolean ignoreNull) {
+		if (id != -1) {
+			if (id != other.id) return false;
+		} else if (!ignoreNull && other.id != id) {
+			return false;
+		}
+		
+		if (name != null) {
+			if (!name.equals(other.name)) return false;
+		} else if (!ignoreNull) {
+			if (other.name != null) return false;
+		}
+		
+		if (type != -1) {
+			if (type != other.type) return false;
+		} else if (!ignoreNull) {
+			if (type != other.type) return false;
+		}
+		
+		if (device_type != null) {
+			if (!device_type.equals(other.device_type)) return false;
+		} else if (!ignoreNull) {
+			if (other.device_type != null) return false;
+		}
+		
+		if (data_type_id != -1) {
+			if (data_type_id != other.data_type_id) return false;
+		}  else if (!ignoreNull) {
+			if (data_type_id != other.data_type_id) return false;
+		}
+		
+		if (pager_type != null) {
+			if (!pager_type.equals(other.pager_type)) return false;
+		} else if (!ignoreNull) {
+			if (other.pager_type != null) return false;
+		}
+		
+		if (display_name != null) {
+			if (!display_name.equals(other.display_name)) return false;
+		} else if (!ignoreNull) {
+			if (other.display_name != null) return false;
+		}
+	
+		if (data_type != null) {
+			if (!data_type.equals(other.data_type)) return false;
+		} else if (!ignoreNull) {
+			if (other.data_type != null) return false;
+		}
+	
+		if (data_structure != null) {
+			if (!data_structure.equals(other.data_structure)) return false;
+		} else if (!ignoreNull) {
+			if (other.data_structure != null) return false;
+		}
+		
+		if (device != null) {
+			if (!device.equals(other.device)) return false;
+		} else if (!ignoreNull) {
+			if (other.device != null) return false;
+		}
+
+		return true;
 	}
 }
