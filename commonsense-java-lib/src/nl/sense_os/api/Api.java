@@ -90,42 +90,53 @@ public class Api {
 	 * @throws IOException
 	 */
 	public static ArrayList<Sensor> listAllSensors() {
-		final String urlString = Params.General.devMode ? SenseUrls.DEV_ALL_SENSORS
+		final String urlStringBase = Params.General.devMode ? SenseUrls.DEV_ALL_SENSORS
 				: SenseUrls.ALL_SENSORS;
-
-		// print request
-		if (Params.General.verbosity) {
-			printRequest(urlString);
-		}
-
-		Map<String, String> response = new HashMap<String, String>();
-
-		try {
-			response = Connector.request(urlString, null,
-					Settings.getSession_id());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// print response
-		if (Params.General.verbosity) {
-			printResponse(response);
-		}
 
 		// create ArrayList of sensors
 		ArrayList<Sensor> sensors = new ArrayList<Sensor>(); // ArrayList of
 																// sensors
-		String content = response.get("content"); // String format of sensors
-		JsonObject json = (JsonObject) parser.parse(content); // JSON container
-																// of sensors
 
-		int numSensors = json.get("sensors").getAsJsonArray().size();
+		int page = 0;
+		int numSensors;
 
-		for (int i = 0; i < numSensors; i++) {
-			JsonElement element = json.get("sensors").getAsJsonArray().get(i);
-			Sensor s = new Gson().fromJson(element, Sensor.class);
-			sensors.add(s);
-		}
+		do {
+			numSensors = 0;
+			String urlString = urlStringBase + "&page=" + page;
+
+			// print request
+			if (Params.General.verbosity) {
+				printRequest(urlString);
+			}
+
+			Map<String, String> response = new HashMap<String, String>();
+
+			try {
+				response = Connector.request(urlString, null,
+						Settings.getSession_id());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			// print response
+			if (Params.General.verbosity) {
+				printResponse(response);
+			}
+
+			String content = response.get("content"); // String format of sensors
+			JsonObject json = (JsonObject) parser.parse(content); // JSON container
+																	// of sensors
+
+			numSensors = json.get("sensors").getAsJsonArray().size();
+
+			for (int i = 0; i < numSensors; i++) {
+				JsonElement element = json.get("sensors").getAsJsonArray().get(i);
+				Sensor s = new Gson().fromJson(element, Sensor.class);
+				sensors.add(s);
+			}
+
+			page += 1;
+		} while (numSensors >= 1000);
 
 		return sensors;
 	}
