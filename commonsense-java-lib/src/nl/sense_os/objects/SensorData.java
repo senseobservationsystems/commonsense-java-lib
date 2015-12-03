@@ -2,7 +2,7 @@ package nl.sense_os.objects;
 
 import java.util.Date;
 
-import com.google.gson.JsonObject;
+import org.json.simple.JSONObject;
 
 public class SensorData {
 
@@ -91,21 +91,22 @@ public class SensorData {
 	 * 
 	 * @return
 	 */
-	public JsonObject toJson() {
-		JsonObject json = new JsonObject();
-		json.addProperty("id", id);
-		json.addProperty("sensor_id", sensor_id);
+	@SuppressWarnings("unchecked")
+	public JSONObject toJson() {
+		JSONObject json = new JSONObject();
+		json.put("id", id);
+		json.put("sensor_id", sensor_id);
 
 		if (value instanceof Number) {
-			json.addProperty("value", (Number) value);
+			json.put("value", (Number) value);
 		} else {
-			json.addProperty("value", value.toString());
+			json.put("value", value.toString());
 		}
 
-		json.addProperty("date", date);
-		json.addProperty("week", week);
-		json.addProperty("month", month);
-		json.addProperty("year", year);
+		json.put("date", date);
+		json.put("week", week);
+		json.put("month", month);
+		json.put("year", year);
 		return json;
 	}
 }

@@ -1,6 +1,6 @@
 package nl.sense_os.objects;
 
-import com.google.gson.JsonObject;
+import org.json.simple.JSONObject;
 
 public class Group {
 
@@ -10,6 +10,13 @@ public class Group {
 	private String publicity = null;
 
 	public Group(String name, String description, String publicity) {
+		this.name = name;
+		this.description = description;
+		this.publicity = publicity;
+	}
+	
+	public Group(int id, String name, String description, String publicity) {
+		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.publicity = publicity;
@@ -36,19 +43,20 @@ public class Group {
 	 * 
 	 * @return
 	 */
-	public JsonObject toJson() {
-		JsonObject json = new JsonObject();
+	@SuppressWarnings("unchecked")
+	public JSONObject toJson() {
+		JSONObject json = new JSONObject();
 		if (id != -1) {
-			json.addProperty("id", id);
+			json.put("id", id);
 		}
 		if (null != name) {
-			json.addProperty("name", name);
+			json.put("name", name);
 		}
 		if (null != description) {
-			json.addProperty("description", description);
+			json.put("description", description);
 		}
 		if (null != publicity) {
-			json.addProperty("public", publicity);
+			json.put("public", publicity);
 		}
 		return json;
 	}

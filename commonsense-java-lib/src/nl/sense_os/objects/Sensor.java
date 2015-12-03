@@ -1,6 +1,6 @@
 package nl.sense_os.objects;
 
-import com.google.gson.JsonObject;
+import org.json.simple.JSONObject;
 
 public class Sensor {
 
@@ -155,45 +155,46 @@ public class Sensor {
 	 * 
 	 * @return
 	 */
-	public JsonObject toJson() {
-		JsonObject json = new JsonObject();
-		JsonObject sensorProperties = new JsonObject();
+	@SuppressWarnings("unchecked")
+	public JSONObject toJson() {
+		JSONObject json = new JSONObject();
+		JSONObject sensorProperties = new JSONObject();
 
 		if (id != -1) {
-			sensorProperties.addProperty("id", id);
+			sensorProperties.put("id", id);
 		}
 		if (name != null) {
-			sensorProperties.addProperty("name", name);
+			sensorProperties.put("name", name);
 		}
 		if (type != -1) {
-			sensorProperties.addProperty("type", type);
+			sensorProperties.put("type", type);
 		}
 		if (device_type != null) {
-			sensorProperties.addProperty("device_type", device_type);
+			sensorProperties.put("device_type", device_type);
 		}
 		if (data_type_id != -1) {
-			sensorProperties.addProperty("data_type_id", data_type_id);
+			sensorProperties.put("data_type_id", data_type_id);
 		}
 		if (pager_type != null) {
-			sensorProperties.addProperty("pager_type", pager_type);
+			sensorProperties.put("pager_type", pager_type);
 		}
 		if (display_name != null) {
-			sensorProperties.addProperty("display_name", display_name);
+			sensorProperties.put("display_name", display_name);
 		}
 		if (data_type != null) {
-			sensorProperties.addProperty("data_type", data_type);
+			sensorProperties.put("data_type", data_type);
 		}
 		if (data_structure != null) {
-			sensorProperties.addProperty("data_structure", data_structure);
+			sensorProperties.put("data_structure", data_structure);
 		}
 		if (device != null) {
-			sensorProperties.addProperty("device", device.toString());
+			sensorProperties.put("device", device.toString());
 		}
 		if (use_data_storage) {
-			sensorProperties.addProperty("use_data_storage", 1);
+			sensorProperties.put("use_data_storage", 1);
 		}
 
-		json.add("sensor", sensorProperties);
+		json.put("sensor", sensorProperties);
 		return json;
 	}
 	

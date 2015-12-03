@@ -18,18 +18,12 @@ import nl.sense_os.objects.Sensor;
 import nl.sense_os.objects.SensorData;
 import nl.sense_os.objects.User;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONValue;
 
 public class Api {
-
-	final static JsonParser parser = new JsonParser();
-
+	
 	/**
 	 * This method returns an ArrayList of devices to which the current user has
 	 * access.
@@ -50,7 +44,7 @@ public class Api {
 		Map<String, String> response = new HashMap<String, String>();
 
 		try {
-			response = Connector.request(urlString, null,
+			response = Connector.request(urlString, (JSONObject) null,
 					Settings.getSession_id());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -67,14 +61,14 @@ public class Api {
 
 		String content = response.get("content"); // String format of devices
 
-		JsonObject json = (JsonObject) parser.parse(content); // JSON container
+		JSONObject json = (JSONObject) JSONValue.parse(content); // JSON container
 																// of devices
 
-		int numSensors = json.get("devices").getAsJsonArray().size();
+		int numSensors = ((JSONArray)json.get("devices")).size();
 
 		for (int i = 0; i < numSensors; i++) {
-			JsonElement element = json.get("devices").getAsJsonArray().get(i);
-			Device d = new Gson().fromJson(element, Device.class);
+			JSONObject device = (JSONObject) ((JSONArray)json.get("devices")).get(i);
+			Device d = new Device(Integer.parseInt(((String)device.get("id"))), (String) device.get("type"), (String) device.get("uuid"));
 			devices.add(d);
 		}
 
@@ -112,7 +106,7 @@ public class Api {
 			Map<String, String> response = new HashMap<String, String>();
 
 			try {
-				response = Connector.request(urlString, null,
+				response = Connector.request(urlString, (JSONObject) null,
 						Settings.getSession_id());
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -124,14 +118,19 @@ public class Api {
 			}
 
 			String content = response.get("content"); // String format of sensors
-			JsonObject json = (JsonObject) parser.parse(content); // JSON container
+			JSONObject json = (JSONObject) JSONValue.parse(content); // JSON container
 																	// of sensors
 
-			numSensors = json.get("sensors").getAsJsonArray().size();
+			numSensors = ((JSONArray)json.get("sensors")).size();
 
 			for (int i = 0; i < numSensors; i++) {
-				JsonElement element = json.get("sensors").getAsJsonArray().get(i);
-				Sensor s = new Gson().fromJson(element, Sensor.class);
+				JSONObject element = (JSONObject) ((JSONArray)json.get("sensors")).get(i);
+				Sensor s = new Sensor((String) element.get("name"),
+										(String) element.get("device_type"),
+										(String) element.get("display_name"),
+										(String) element.get("data_type"),
+										(String) element.get("data_structure"));
+				s.setId(Integer.parseInt((String) element.get("id")));
 				sensors.add(s);
 			}
 
@@ -170,7 +169,7 @@ public class Api {
 		Map<String, String> response = new HashMap<String, String>();
 
 		try {
-			response = Connector.request(urlString, null,
+			response = Connector.request(urlString, (JSONObject) null,
 					Settings.getSession_id());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -185,14 +184,18 @@ public class Api {
 		ArrayList<Sensor> sensors = new ArrayList<Sensor>(); // ArrayList of
 																// sensors
 		String content = response.get("content"); // String format of sensors
-		JsonObject json = (JsonObject) parser.parse(content); // JSON container
+		JSONObject json = (JSONObject) JSONValue.parse(content); // JSON container
 																// of sensors
 
-		int numSensors = json.get("sensors").getAsJsonArray().size();
+		int numSensors = ((JSONArray)json.get("sensors")).size();
 
 		for (int i = 0; i < numSensors; i++) {
-			JsonElement element = json.get("sensors").getAsJsonArray().get(i);
-			Sensor s = new Gson().fromJson(element, Sensor.class);
+			JSONObject element = (JSONObject) ((JSONArray)json.get("sensors")).get(i);
+			Sensor s = new Sensor((String) element.get("name"),
+					(String) element.get("device_type"),
+					(String) element.get("display_name"),
+					(String) element.get("data_type"),
+					(String) element.get("data_structure"));
 			sensors.add(s);
 		}
 
@@ -244,7 +247,7 @@ public class Api {
 		Map<String, String> response = new HashMap<String, String>();
 
 		try {
-			response = Connector.request(urlString, null,
+			response = Connector.request(urlString, (JSONObject) null,
 					Settings.getSession_id());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -263,16 +266,36 @@ public class Api {
 																		// sensors
 			String content = response.get("content"); // String format of
 														// sensors
-			JsonObject json = (JsonObject) parser.parse(content); // JSON
+			// System.out.println(content);
+			JSONObject json = (JSONObject) JSONValue.parse(content); // JSON
 																	// container
 																	// of
 																	// sensors
-
-			int numSensors = json.get("data").getAsJsonArray().size();
+			// System.out.println(json);
+			int numSensors = ((JSONArray)json.get("data")).size();
 
 			for (int i = 0; i < numSensors; i++) {
-				JsonElement element = json.get("data").getAsJsonArray().get(i);
-				SensorData d = new Gson().fromJson(element, SensorData.class);
+				JSONObject element = (JSONObject) ((JSONArray)json.get("data")).get(i);
+				System.out.println("element" + element);
+				String id = (String) element.get("id");
+				Integer sensor_id = ((Long) element.get("sensor_id")).intValue();
+				String value = (String) element.get("value");
+				Double datadata = (Double) element.get("date");
+				Integer week = 0;
+				if(element.get("week") != null)
+					week = ((Long) element.get("week")).intValue();
+				Integer month = ((Long) element.get("month")).intValue();
+				Integer year = ((Long) element.get("year")).intValue();
+				
+				SensorData d = new SensorData(id, sensor_id, value, datadata, week, month, year);
+//				SensorData d = new SensorData((String) element.get("id"),
+//							  ((Long) element.get("sensor_id")).intValue(),
+//							  (String) element.get("value"),
+//							  (Double) element.get("date"),
+//							  ((Long) element.get("week",)).intValue(),
+//							  ((Long) element.get("month")).intValue(),
+//							  ((Long) element.get("year")).intValue());
+				// System.out.println("data" + d);
 				data.add(d);
 			}
 
@@ -306,7 +329,7 @@ public class Api {
 		Map<String, String> response = new HashMap<String, String>();
 
 		try {
-			response = Connector.request(url, null, Settings.getSession_id());
+			response = Connector.request(url, (JSONObject) null, Settings.getSession_id());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -320,14 +343,17 @@ public class Api {
 		ArrayList<Group> groupList = new ArrayList<Group>(); // ArrayList of
 																// groups
 		String groups = response.get("content"); // String format of groups
-		JsonObject json = (JsonObject) parser.parse(groups); // JSON container
+		JSONObject json = (JSONObject) JSONValue.parse(groups); // JSON container
 																// of groups
-
-		int numGroups = json.get("groups").getAsJsonArray().size();
+                int numGroups = ((JSONArray)json.get("groups")).size();
 
 		for (int i = 0; i < numGroups; i++) {
-			JsonElement element = json.get("groups").getAsJsonArray().get(i);
-			Group g = new Gson().fromJson(element, Group.class);
+			JSONObject element = (JSONObject) ((JSONArray)json.get("groups")).get(i);
+			Group g = new Group(Integer.parseInt(((String)element.get("id"))),
+											(String) element.get("name"),
+											(String) element.get("description"),
+											(String) element.get("publicity"));
+
 			groupList.add(g);
 		}
 
@@ -379,7 +405,7 @@ public class Api {
 		Map<String, String> response = new HashMap<String, String>();
 
 		try {
-			response = Connector.request(urlString, null,
+			response = Connector.request(urlString, (JSONObject) null,
 					Settings.getSession_id());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -391,13 +417,13 @@ public class Api {
 		}
 
 		String content = response.get("content");
-		JsonObject json = (JsonObject) parser.parse(content);
+		JSONObject json = (JSONObject) JSONValue.parse(content);
 		if (null != json.get("error")) {
 			System.out.println(json.get("error"));
 			return null;
 		}
 
-		return new Gson().fromJson(json.get("device"), Device.class);
+		return new Device(Integer.parseInt(((String)json.get("id"))), (String) json.get("type"), (String) json.get("uuid"));
 	}
 
 	/**
@@ -415,7 +441,7 @@ public class Api {
 	 * This method will create a new sensor at CommonSense.
 	 */
 	public static boolean createSensor(Sensor sensor, boolean checkForDuplicates) {
-		final JsonObject json = sensor.toJson();
+		final JSONObject json = sensor.toJson();
 
 		// See if sensor with same name already exists
 		if (checkForDuplicates) {
@@ -468,10 +494,10 @@ public class Api {
 
 		// TODO: change reading through location header
 		// update sensor id
-		JsonElement jelement = new JsonParser().parse(response.get("content"));
-		JsonObject jobject = jelement.getAsJsonObject().getAsJsonObject(
-				"sensor");
-		sensor.setId(jobject.get("id").getAsInt());
+		String content = response.get("content");
+		JSONObject jobject = (JSONObject) JSONValue.parse(content);
+		JSONObject sensorObject = (JSONObject) jobject.get("sensor");
+		sensor.setId(Integer.parseInt((String) sensorObject.get("id")));
 
 		// return response.get("http response code");
 		return created;
@@ -541,7 +567,7 @@ public class Api {
 	 * @return true if the data was successfully posted to CommonSense, false
 	 *         otherwise.
 	 */
-	public static boolean postSensorData(int sensorId, JsonObject json) {
+	public static boolean postSensorData(int sensorId, JSONObject json) {
 		// request URL
 		String urlString = Params.General.devMode ? SenseUrls.DEV_SENSOR_DATA
 				: SenseUrls.SENSOR_DATA;
@@ -583,20 +609,20 @@ public class Api {
 		}
 
 		// build JSON string
-		JsonObject pointJson = new JsonObject();
-		pointJson.addProperty("date", point.getDate());
+		JSONObject pointJson = new JSONObject();
+		pointJson.put("date", point.getDate());
 
 		if (point.getValue() instanceof Number) {
-			pointJson.addProperty("value", (Number) point.getValue());
+			pointJson.put("value", (Number) point.getValue());
 		} else {
-			pointJson.addProperty("value", point.getValue().toString());
+			pointJson.put("value", point.getValue().toString());
 		}
 
-		JsonArray dataArray = new JsonArray();
+		JSONArray dataArray = new JSONArray();
 		dataArray.add(pointJson);
 
-		JsonObject body = new JsonObject();
-		body.add("data", dataArray);
+		JSONObject body = new JSONObject();
+		body.put("data", dataArray);
 
 		Map<String, String> response = new HashMap<String, String>();
 
@@ -629,23 +655,23 @@ public class Api {
 		}
 
 		// build JSON string
-		JsonArray dataArray = new JsonArray();
+		JSONArray dataArray = new JSONArray();
 
 		for (SensorData point : points) {
-			JsonObject pointJson = new JsonObject();
-			pointJson.addProperty("date", point.getDate());
+			JSONObject pointJson = new JSONObject();
+			pointJson.put("date", point.getDate());
 
 			if (point.getValue() instanceof Number) {
-				pointJson.addProperty("value", (Number) point.getValue());
+				pointJson.put("value", (Number) point.getValue());
 			} else {
-				pointJson.addProperty("value", point.getValue().toString());
+				pointJson.put("value", point.getValue().toString());
 			}
 
 			dataArray.add(pointJson);
 		}
 
-		JsonObject body = new JsonObject();
-		body.add("data", dataArray);
+		JSONObject body = new JSONObject();
+		body.put("data", dataArray);
 
 		Map<String, String> response = new HashMap<String, String>();
 
@@ -685,10 +711,9 @@ public class Api {
 		// int week = 604800;
 
 		try {
-			JsonElement element = parser
+			JSONObject element = (JSONObject) JSONValue
 					.parse(new FileReader(pathToCredentials));
-			Credentials credentials = new Gson().fromJson(element,
-					Credentials.class);
+			Credentials credentials = new Credentials((String) element.get("username"), (String) element.get("password"), "", 0);
 
 			// if (credentials.getDate_created() > (now - week)) {
 			// // session out of date
@@ -700,10 +725,6 @@ public class Api {
 			// System.out.println("reusing x-session_id.");
 			// }
 
-		} catch (JsonIOException e) {
-			e.printStackTrace();
-		} catch (JsonSyntaxException e) {
-			e.printStackTrace();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

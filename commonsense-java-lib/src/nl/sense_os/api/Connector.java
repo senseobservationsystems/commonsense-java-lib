@@ -29,7 +29,7 @@ import nl.sense_os.objects.Params;
 
 import org.apache.http.conn.ssl.SSLSocketFactory;
 
-import com.google.gson.JsonObject;
+import org.json.simple.JSONObject;
 
 public class Connector {
 
@@ -100,9 +100,9 @@ public class Connector {
 				: SenseUrls.LOGIN;
 		// System.out.println(url);
 
-		final JsonObject user = new JsonObject();
-		user.addProperty("username", username);
-		user.addProperty("password", password);
+		final JSONObject user = new JSONObject();
+		user.put("username", username);
+		user.put("password", password);
 
 		// perform actual request
 		Map<String, String> response = request(url, user, null);
@@ -190,6 +190,7 @@ public class Connector {
 		}
 	}
 
+
 	/**
 	 * Performs request at CommonSense API. Returns the response code, content,
 	 * and headers.
@@ -209,7 +210,7 @@ public class Connector {
 	 * @throws IOException
 	 */
 	public static Map<String, String> request(String urlString,
-			JsonObject content, String cookie) throws IOException {
+			JSONObject content, String cookie) throws IOException {
 
 		int retry = 0;
 		while (retry < 3) {
@@ -341,7 +342,7 @@ public class Connector {
 		}
 		return null;
 	}
-
+	
 	/**
 	 * Performs DELETE request at CommonSense API. Returns the response code,
 	 * content and headers.

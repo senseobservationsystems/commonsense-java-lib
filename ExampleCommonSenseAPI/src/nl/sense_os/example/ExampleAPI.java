@@ -2,15 +2,16 @@ package nl.sense_os.example;
 
 import java.util.ArrayList;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import nl.sense_os.api.Api;
 import nl.sense_os.objects.Device;
 import nl.sense_os.objects.Group;
 import nl.sense_os.objects.Params;
 import nl.sense_os.objects.Sensor;
 import nl.sense_os.objects.SensorData;
+
+import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONValue;
 
 /**
  * Sample code for using <i>commonsense-java-lib</i>.
@@ -37,7 +38,7 @@ public class ExampleAPI {
 		listAllSensors();
 		getSensorData();
 		createSensor();
-		postSensorData();
+		// postSensorData();
 		deleteSensor();
 	}
 
@@ -60,6 +61,7 @@ public class ExampleAPI {
 	private static void listAllSensors() {
 		ArrayList<Sensor> allSensors = Api.listAllSensors();
 		System.out.println("Test listAllSensors()... " + (allSensors.size() > 0 ? "Success!" : "Fail!"));
+		System.out.println("Get " + allSensors.size() + " sensors");
 		printSensorList(allSensors);
 	}
 
@@ -76,8 +78,8 @@ public class ExampleAPI {
 		String device_type = "smartphone";
 		String data_type = "json";
 
-		JsonObject json = new JsonObject();
-		json.addProperty("data", "JSONArray");
+		JSONObject json = new JSONObject();
+		json.put("data", "JSONArray");
 		String data_structure = json.toString();
 
 		Sensor s = new Sensor(name, device_type, name, data_type, data_structure);
@@ -88,23 +90,23 @@ public class ExampleAPI {
 
 	private static void postSensorData() {
 		// settings for posting sensor data
-		int sensorId = 0;
-		JsonObject json = new JsonObject();
-		json.addProperty("x_pos", 1.4);
-		json.addProperty("y_pos", 0.2);
-		json.addProperty("heading", Math.PI);
+		int sensorId = 108142;
+		JSONObject json = new JSONObject();
+		json.put("x_pos", 1.4);
+		json.put("y_pos", 0.2);
+		json.put("heading", Math.PI);
 		String value = json.toString();
 
-		JsonObject dataPoint = new JsonObject();
-		dataPoint.addProperty("value", value);
-		dataPoint.addProperty("date", System.currentTimeMillis() / 1000);
+		JSONObject dataPoint = new JSONObject();
+		dataPoint.put("value", json);
+		dataPoint.put("date", System.currentTimeMillis() / 1000);
 
-		JsonArray dataArray = new JsonArray();
+		JSONArray dataArray = new JSONArray();
 		dataArray.add(dataPoint);
 		dataArray.add(dataPoint);
 
-		JsonObject jsonFinal = new JsonObject();
-		jsonFinal.add("data", dataArray);
+		JSONObject jsonFinal = new JSONObject();
+		jsonFinal.put("data", dataArray);
 
 		boolean posted = Api.postSensorData(sensorId, jsonFinal);
 		System.out.println("Test postSensorData()... " + (posted ? "Success!" : "Fail!"));
@@ -130,6 +132,7 @@ public class ExampleAPI {
 
 	private static void printSensorData(ArrayList<SensorData> sensordata) {
 		for (int i = 0; i < sensordata.size(); i++) {
+			System.out.println("data:" + sensordata.get(i));
 			System.out.println("date: " + sensordata.get(i).getDate());
 			System.out.println("value: " + sensordata.get(i).getValue());
 		}
