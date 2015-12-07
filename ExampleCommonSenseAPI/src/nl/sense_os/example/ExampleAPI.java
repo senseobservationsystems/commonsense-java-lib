@@ -36,9 +36,10 @@ public class ExampleAPI {
 		listGroups();
 		listSensors();
 		listAllSensors();
+		findSensors();
 		getSensorData();
 		createSensor();
-		// postSensorData();
+		postSensorData();
 		deleteSensor();
 	}
 
@@ -61,6 +62,25 @@ public class ExampleAPI {
 	private static void listAllSensors() {
 		ArrayList<Sensor> allSensors = Api.listAllSensors();
 		System.out.println("Test listAllSensors()... " + (allSensors.size() > 0 ? "Success!" : "Fail!"));
+		System.out.println("Get " + allSensors.size() + " sensors");
+		printSensorList(allSensors);
+	}
+	
+	private static void findSensors() {
+		JSONObject criterion = new JSONObject();
+		JSONObject filter = new JSONObject();
+		JSONArray sensor_statement_groups = new JSONArray();
+		JSONArray sensor_statement_group = new JSONArray();
+		JSONObject device_type_filter = new JSONObject();
+		device_type_filter.put("sensor_property", "device_type");
+		device_type_filter.put("operator", "equal");
+		device_type_filter.put("value", "battery sensor");
+		sensor_statement_group.add(device_type_filter);
+		sensor_statement_groups.add(sensor_statement_group);
+		filter.put("sensor_statement_groups", sensor_statement_groups);
+		criterion.put("filter", filter);
+		ArrayList<Sensor> allSensors = Api.findSensors(criterion);
+		System.out.println("Test findSensors()... " + (allSensors.size() > 0 ? "Success!" : "Fail!"));
 		System.out.println("Get " + allSensors.size() + " sensors");
 		printSensorList(allSensors);
 	}

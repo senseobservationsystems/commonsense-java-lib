@@ -203,6 +203,71 @@ public class Api {
 	}
 
 	/**
+	 * This method returns a list of sensors to which the current user has
+	 * access.
+	 * 
+	 * @access public
+	 * @return sensor array
+	 * @throws IOException
+	 */
+	public static ArrayList<Sensor> findSensors(JSONObject criterion) {
+		final String urlStringBase = Params.General.devMode ? SenseUrls.DEV_FIND_SENSORS
+				: SenseUrls.FIND_SENSORS;
+
+		// create ArrayList of sensors
+		ArrayList<Sensor> sensors = new ArrayList<Sensor>(); // ArrayList of
+																// sensors
+
+		int page = 0;
+		int numSensors;
+
+		do {
+			numSensors = 0;
+			String urlString = urlStringBase + "&page=" + page;
+
+			// print request
+			if (Params.General.verbosity) {
+				printRequest(urlString);
+			}
+
+			Map<String, String> response = new HashMap<String, String>();
+
+			try {
+				response = Connector.request(urlString, criterion,
+						Settings.getSession_id());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			// print response
+			if (Params.General.verbosity) {
+				printResponse(response);
+			}
+
+			String content = response.get("content"); // String format of sensors
+			JSONObject json = (JSONObject) JSONValue.parse(content); // JSON container
+																	// of sensors
+
+			numSensors = ((JSONArray)json.get("sensors")).size();
+
+			for (int i = 0; i < numSensors; i++) {
+				JSONObject element = (JSONObject) ((JSONArray)json.get("sensors")).get(i);
+				Sensor s = new Sensor((String) element.get("name"),
+										(String) element.get("device_type"),
+										(String) element.get("display_name"),
+										"",
+										"");
+				s.setId(Integer.parseInt((String) element.get("id")));
+				sensors.add(s);
+			}
+
+			page += 1;
+		} while (numSensors >= 1000);
+
+		return sensors;
+	}
+
+	/**
 	 * This method returns a list of sensor data constrained by the parameters
 	 * below
 	 * 
@@ -280,14 +345,14 @@ public class Api {
 				String id = (String) element.get("id");
 				Integer sensor_id = ((Long) element.get("sensor_id")).intValue();
 				String value = (String) element.get("value");
-				Double datadata = (Double) element.get("date");
+				Double date = ((Number)element.get("date")).doubleValue();
 				Integer week = 0;
 				if(element.get("week") != null)
 					week = ((Long) element.get("week")).intValue();
 				Integer month = ((Long) element.get("month")).intValue();
 				Integer year = ((Long) element.get("year")).intValue();
 				
-				SensorData d = new SensorData(id, sensor_id, value, datadata, week, month, year);
+				SensorData d = new SensorData(id, sensor_id, value, date, week, month, year);
 //				SensorData d = new SensorData((String) element.get("id"),
 //							  ((Long) element.get("sensor_id")).intValue(),
 //							  (String) element.get("value"),
@@ -596,6 +661,7 @@ public class Api {
 		// return response.get("http response code");
 	}
 
+	@SuppressWarnings("unchecked")
 	public static boolean postSensorData(SensorData point) {
 		// request URL
 		String urlString = Params.General.devMode ? SenseUrls.DEV_SENSOR_DATA
@@ -642,6 +708,7 @@ public class Api {
 		// return response.get("http response code");
 	}
 
+	@SuppressWarnings("unchecked")
 	public static boolean postSensorMultiData(int sensorId,
 			List<SensorData> points) {
 		// request URL

@@ -17,6 +17,9 @@ public class SenseUrls {
 	public static final String ALL_SENSORS = BASE + "sensors" + FORMAT + "?per_page=1000&details=full";
 	public static final String DEV_ALL_SENSORS = DEV_BASE + "sensors" + FORMAT + "?per_page=1000&details=full";
 
+	public static final String FIND_SENSORS = BASE + "sensors/find" + FORMAT + "?per_page=1000&details=full";
+	public static final String DEV_FIND_SENSORS = DEV_BASE + "sensors/find" + FORMAT + "?per_page=1000&details=full";
+	
 	public static final String REGISTER_GCM_ID = BASE + "devices/<id>/push/register" + FORMAT;
 	public static final String DEV_REGISTER_GCM_ID = DEV_BASE + "devices/<id>/push/register" + FORMAT;
 
